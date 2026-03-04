@@ -1,3 +1,13 @@
+
+const createElements = (arr)=>{
+    const htmlElements = arr.map((el) =>`<span class="btn">${el}</span>`);
+    return( htmlElements.join(" "));
+};
+
+
+
+
+
 const loadLessons = () => {
     fetch("https://openapi.programming-hero.com/api/levels/all") // promise of responsive
         .then(res => res.json()) // promise of json data
@@ -10,6 +20,40 @@ const removeActive= ()=>{
     lessonButtons.forEach(btn=>{
         btn.classList.remove("active");
     })
+}
+
+
+const loadWordDetails= async(id) => {
+    const url = `https://openapi.programming-hero.com/api/word/${id}`;
+    // console.log(url);
+    const res = await fetch(url);
+    const details = await res.json();
+    displayWordDetails(details.data);
+
+}
+
+const displayWordDetails = (word) => {
+    const detailsBox = document.getElementById("details-container");
+    detailsBox.innerHTML =`
+     <div>
+                    <h2 class="text-2xl font-bold">${word.word} (<i class="fa-solid fa-microphone-lines"></i>:${word.pronunciation})</h2>
+                </div>
+                <div>
+                    <h2 class="text-2xl font-bold">Meaning</h2>
+                    <p>${word.meaning ? word.meaning: "Meaning not found"}</p>
+                </div>
+                <div>
+                    <h2 class="text-2xl font-bold">Example</h2>
+                    <p>${word.example ? word.example:"Example not found"}</p>
+                </div>
+                <div>
+                    <h2 class=" font-bold">Synonym</h2>
+                    <div class="">${createElements(word.synonyms)}</div>
+                </div> 
+    
+    `;
+
+     document.getElementById("word_modal").showModal();
 }
 
 const loadLevelWord = (id) => {
@@ -60,8 +104,9 @@ const displayLevelWord = (words) => {
             <h2 class="font-bold text-xl">${word.word ? word.word: "Word not found"}</h2>
             <p class="font-semibold">Meaning /Pronounciation</p>
             <div class="font-bangla font-medium text-2xl">"${word.meaning ? word.meaning: "Meaning not found"} / ${word.pronunciation ? word.pronunciation: "Pronunciation not found"}"</div>
+
             <div class="flex items-center justify-between gap-2 mt-4">
-                <button class="btn bg-[#1A91FF10] hover:bg-[#1A91FF80]"><i class="fa-solid fa-circle-info"></i></button>
+                <button onClick="loadWordDetails(${word.id})" class="btn bg-[#1A91FF10] hover:bg-[#1A91FF80]"><i class="fa-solid fa-circle-info"></i></button>
                 <button class="btn bg-[#1A91FF10] hover:bg-[#1A91FF80]"><i class="fa-solid fa-volume-high"></i></button>
             </div>
         </div>
